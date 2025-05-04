@@ -1,4 +1,5 @@
 import { LightningElement, api, track, wire} from 'lwc';
+import { reduceErrors } from 'c/ldsUtils';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getContacts from '@salesforce/apex/ContactController.getContacts';
 
@@ -28,6 +29,10 @@ export default class ContactList extends LightningElement {
                 }),
             );
         }
+    }
+    get errors() {
+        return (this.contacts.error) ?
+            reduceErrors(this.contacts.error) : [];
     }
 
 }
