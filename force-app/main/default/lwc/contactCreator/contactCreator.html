@@ -1,0 +1,18 @@
+<!--
+  @description       : 
+  @author            : halCharymyradov
+  @group             : 
+  @last modified on  : 05-04-2025
+  @last modified by  : halCharymyradov
+-->
+<template>
+    <lightning-card title="Create Contact" icon-name="standard:contact">
+        <lightning-record-form
+        object-api-name={objectApiName}
+        fields={FIELDS}
+        mode="edit"
+        onsuccess={handleSuccess}
+        onerror={handleError}>
+    </lightning-record-form>
+    </lightning-card>
+</template>
