@@ -1,0 +1,38 @@
+<!--
+  @description       : 
+  @author            : Hal Charymyradov
+  @group             : 
+  @last modified on  : 05-04-2025
+  @last modified by  : halCharymyradov
+-->
+<template>
+    <lightning-card title="Real Time Account Record Display" icon-name="standard:account">
+        <template if:true={recordId}>
+            <lightning-record-view-form record-id={recordId} object-api-name="Account">
+                <lightning-output-field field-name="Name"></lightning-output-field>
+                <lightning-output-field field-name="Phone"></lightning-output-field>
+                <lightning-output-field field-name="Website"></lightning-output-field>
+            </lightning-record-view-form>
+            <lightning-button variant="neutral" label="Edit" onclick={handleEdit}></lightning-button>
+        </template>
+
+        <template if:false={recordId}>
+            <p>No record selected.</p>
+        </template>
+
+        <template if:true={isEditable}>
+            <lightning-record-edit-form
+                record-id={recordId}
+                object-api-name="Account"
+                onsuccess={handleSuccess}>
+
+                <lightning-input-field field-name="Name"></lightning-input-field>
+                <lightning-input-field field-name="Phone"></lightning-input-field>
+                <lightning-input-field field-name="Website"></lightning-input-field>
+
+                <lightning-button type="submit" variant="brand" label="Save"></lightning-button>
+                <lightning-button type="button" variant="neutral" label="Cancel" onclick={handleCancel}></lightning-button>
+            </lightning-record-edit-form>
+        </template>
+    </lightning-card>
+</template>
