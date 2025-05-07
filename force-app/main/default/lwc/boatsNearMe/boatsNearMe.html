@@ -1,0 +1,16 @@
+<!--
+  @description       : 
+  @author            : halCharymyradov
+  @group             : 
+  @last modified on  : 05-06-2025
+  @last modified by  : halCharymyradov
+-->
+<template>
+    <lightning-card class="slds-is-relative">
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading" variant="brand" size="large"></lightning-spinner>
+        </template>       
+        <lightning-map map-markers={mapMarkers}></lightning-map>
+        <div slot="footer">Top 10 Only!</div>
+    </lightning-card>
+</template>  
