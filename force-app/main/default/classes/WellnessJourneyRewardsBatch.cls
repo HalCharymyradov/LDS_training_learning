@@ -1,4 +1,11 @@
-global class WellnessJourneyRewardsBatch implements Database.Batchable<sObject> {
+/**
+ * @description       : 
+ * @author            : halCharymyradov
+ * @group             : 
+ * @last modified on  : 05-11-2025
+ * @last modified by  : halCharymyradov
+**/
+global class WellnessJourneyRewardsBatch implements Database.Batchable<sObject>, Database.AllowsCallouts {
 
     global Database.QueryLocator start(Database.BatchableContext BC) {
     
@@ -49,7 +56,7 @@ global class WellnessJourneyRewardsBatch implements Database.Batchable<sObject> 
         }
         
         //Serialize JSON
-        String jsonBody;
+        String jsonBody = JSON.serialize(usersListMap);
         
         //Invoke Callout
         Integer responseCode = RewardsCalloutService.submitUsersForRewardCallout(jsonBody);
