@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : halCharymyradov
  * @group             : 
- * @last modified on  : 05-11-2025
+ * @last modified on  : 05-22-2025
  * @last modified by  : halCharymyradov
 **/
 @isTest
@@ -18,8 +18,8 @@ global class BillingCalloutServiceMock implements WebServiceMock {
         String responseName,
         String responseType
     ) {
-        salesforceComThInvoiceWebService.billProjectResponse_element res =
-            new salesforceComThInvoiceWebService.billProjectResponse_element();
+        BillingServiceProxy.billProjectResponse_element res =
+            new BillingServiceProxy.billProjectResponse_element();
         res.status = 'Success';
         response.put('response_x', res);
     }
