@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>61.0</apiVersion>
+    <description>Flow to ensure tasks on high-priority cases have due dates within 7 days</description>
+    <environments>Default</environments>
+    <interviewLabel>Task Due Date {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Task Due Date</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <description>Query for related open high priority cases</description>
+        <name>Get_High_Priority_Cases</name>
+        <label>Get High Priority Cases</label>
+        <locationX>176</locationX>
+        <locationY>335</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Any_High_Priority_Cases</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.WhatId</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Priority</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>High</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>IsClosed</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Case</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <decisions>
+        <description>Check if any high priority cases were found</description>
+        <name>Any_High_Priority_Cases</name>
+        <label>Any High Priority Cases?</label>
+        <locationX>176</locationX>
+        <locationY>455</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Yes_High_Priority_Found</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_High_Priority_Cases</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Is_The_ActivityDate_Too_Far_Into_The_Future</targetReference>
+            </connector>
+            <label>Yes - High Priority Found</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Check if the task due date is more than 7 days in the future</description>
+        <name>Is_The_ActivityDate_Too_Far_Into_The_Future</name>
+        <label>Is The ActivityDate Too Far Into The Future?</label>
+        <locationX>44</locationX>
+        <locationY>575</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Too_Far_Into_The_Future</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.ActivityDate</leftValueReference>
+                <operator>GreaterThan</operator>
+                <rightValue>
+                    <elementReference>OneWeek</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Error_ActivityDate_Should_Be_Sooner</targetReference>
+            </connector>
+            <label>Yes - Too Far Into The Future</label>
+        </rules>
+    </decisions>
+    <customErrors>
+        <description>Error message when task due date is too far in the future for high priority case</description>
+        <name>Error_ActivityDate_Should_Be_Sooner</name>
+        <label>Error - ActivityDate Should Be Sooner</label>
+        <locationX>44</locationX>
+        <locationY>695</locationY>
+        <customErrorMessages>
+            <errorMessage>High Priority cases need to be addressed quickly. Please set the due date no later than {!OneWeek}.</errorMessage>
+            <isFieldError>true</isFieldError>
+            <fieldSelection>ActivityDate</fieldSelection>
+        </customErrorMessages>
+    </customErrors>
+    <formulas>
+        <description>Calculate date one week from today</description>
+        <name>OneWeek</name>
+        <dataType>Date</dataType>
+        <expression>TODAY() + 7</expression>
+    </formulas>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_High_Priority_Cases</targetReference>
+        </connector>
+        <object>Task</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

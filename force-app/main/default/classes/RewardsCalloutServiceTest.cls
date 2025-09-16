@@ -1,12 +1,20 @@
 /**
  * @description       : 
- * @author            : halCharymyradov
+ * @author            : Hal Charymyradov
  * @group             : 
- * @last modified on  : 05-11-2025
- * @last modified by  : halCharymyradov
+ * @last modified on  : 09-15-2025
+ * @last modified by  : Hal Charymyradov
 **/
 @isTest
 public class RewardsCalloutServiceTest {
+
+    // ---- NEW (inside this class file, not a new top-level class): Throwing mock to hit catch {} ----
+    private class ThrowingMock implements HttpCalloutMock {
+        public HttpResponse respond(HttpRequest req) {
+            // Force Http.send(req) to throw so the service's catch block executes
+            throw new CalloutException('boom');
+        }
+    }
 
     @isTest
     static void testRewardsCallout_withEligibleUser() {
@@ -52,7 +60,7 @@ public class RewardsCalloutServiceTest {
         Database.executeBatch(new WellnessJourneyRewardsBatch(), 200);
         Test.stopTest();
 
-        // Directly call RewardsCalloutService to ensure 100% coverage
+        // Direct call – success path
         List<Map<String, Object>> mockUsers = new List<Map<String, Object>>();
         mockUsers.add(new Map<String, Object>{
             'userId' => u.Id,
@@ -70,13 +78,12 @@ public class RewardsCalloutServiceTest {
         Test.setMock(HttpCalloutMock.class, new RewardsCalloutServiceMock());
 
         List<Map<String, Object>> users = new List<Map<String, Object>>();
-        Map<String, Object> user = new Map<String, Object>{
+        users.add(new Map<String, Object>{
             'userId' => '005123456789ABC',
             'fullName' => 'Test User',
             'email' => 'test@example.com',
             'username' => 'test@example.com'
-        };
-        users.add(user);
+        });
 
         String jsonBody = JSON.serialize(users);
 
@@ -87,6 +94,7 @@ public class RewardsCalloutServiceTest {
         System.assertEquals(201, code, 'Expected 201 status from mocked callout');
     }
 
+    // Non-throwing server error (500) — covers "unsuccessful" response path inside try {}
     @isTest
     static void testRewardsCalloutService_errorHandling() {
         Test.setMock(HttpCalloutMock.class, new ErrorMock());
@@ -105,5 +113,29 @@ public class RewardsCalloutServiceTest {
         Test.stopTest();
 
         System.assertEquals(500, result);
+    }
+
+    // Extra tiny test to bump coverage (empty payload success path)
+    @isTest
+    static void testRewardsCalloutService_emptyPayload_ok() {
+        Test.setMock(HttpCalloutMock.class, new RewardsCalloutServiceMock());
+
+        Test.startTest();
+        Integer result = RewardsCalloutService.submitUsersForRewardCallout('[]');
+        Test.stopTest();
+
+        System.assertEquals(201, result); 
+    }
+
+    // ---- NEW: explicit catch-path coverage (exception thrown by mock -> catch {} returns 500)
+    @isTest
+    static void testRewardsCalloutService_exceptionHandling() {
+        Test.setMock(HttpCalloutMock.class, new ThrowingMock());
+
+        Test.startTest();
+        Integer result = RewardsCalloutService.submitUsersForRewardCallout('{"force":"error"}');
+        Test.stopTest();
+
+        System.assertEquals(500, result, 'Exception path should return 500');
     }
 }

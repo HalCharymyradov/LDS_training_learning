@@ -1,36 +1,28 @@
 /**
  * @description       : 
- * @author            : halCharymyradov
+ * @author            : Hal Charymyradov
  * @group             : 
- * @last modified on  : 05-11-2025
- * @last modified by  : halCharymyradov
+ * @last modified on  : 09-15-2025
+ * @last modified by  : Hal Charymyradov
 **/
-public class RewardsCalloutService{
+public with sharing class RewardsCalloutService {
 
     public static Integer submitUsersForRewardCallout(String jsonBody) {
-        //Set Endpoint from Named Credential
-        HttpRequest request = new HttpRequest();
-        request.setEndpoint('callout:IntegrationSB__BalancedLiving/rewards');
-        request.setMethod('POST');
-        request.setHeader('Content-Type', 'application/json');
-        request.setBody(jsonBody);
-        
-        //Make HTTP Callout
+        HttpRequest req = new HttpRequest();
+        req.setEndpoint('callout:IntegrationSB__BalancedLiving/rewards'); // exact NC + path
+        req.setMethod('POST');
+        req.setHeader('Content-Type', 'application/json');
+        req.setBody(jsonBody);
+
         Http http = new Http();
-        HttpResponse response;
-        Integer statusCode;
-        
         try {
-            response = http.send(request);
-            statusCode = response.getStatusCode();
-            System.debug('HTTP Response Status: ' + statusCode);
-            System.debug('HTTP Response Body: ' + response.getBody());
+            HttpResponse res = http.send(req);
+            System.debug('RewardsCalloutService → Status: ' + res.getStatusCode());
+            System.debug('RewardsCalloutService → Body: ' + res.getBody());
+            return res.getStatusCode();
         } catch (Exception e) {
-            System.debug('HTTP Callout Failed: ' + e.getMessage());
-            statusCode = 500;
+            System.debug('RewardsCalloutService → Callout failed: ' + e.getMessage());
+            return 500;
         }
-        
-        //Update to return response status code
-        return statusCode;    
     }
 }

@@ -1,9 +1,9 @@
 /**
  * @description       : 
- * @author            : halCharymyradov
+ * @author            : Hal Charymyradov
  * @group             : 
- * @last modified on  : 05-11-2025
- * @last modified by  : halCharymyradov
+ * @last modified on  : 09-15-2025
+ * @last modified by  : Hal Charymyradov
 **/
 @isTest
 global class RewardsCalloutServiceMock implements HttpCalloutMock {
