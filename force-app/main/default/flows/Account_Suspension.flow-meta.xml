@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>56.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>Flow to suspend accounts from Account record page.</description>
+    <environments>Default</environments>
+    <interviewLabel>Account Suspension {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Account Suspension</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>Flow</processType>
+    <recordUpdates>
+        <description>Update the suspended Account marking it as inactive, checking the suspended checkbox and adding the reason</description>
+        <name>Update_Account</name>
+        <label>Update Account</label>
+        <locationX>176</locationX>
+        <locationY>278</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Active__c</field>
+            <value>
+                <stringValue>No</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Reason_for_Suspension__c</field>
+            <value>
+                <elementReference>Reason</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Suspended__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <object>Account</object>
+    </recordUpdates>
+    <screens>
+        <description>Input for capturing the reason for the suspension</description>
+        <name>Suspension_Screen</name>
+        <label>Suspension Screen</label>
+        <locationX>176</locationX>
+        <locationY>158</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>true</allowPause>
+        <connector>
+            <targetReference>Update_Account</targetReference>
+        </connector>
+        <fields>
+            <name>Instructions</name>
+            <fieldText>&lt;p&gt;Why is the Account being Suspended?&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Reason</name>
+            <fieldType>LargeTextArea</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Suspension_Screen</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <description>The Id of the triggering Account</description>
+        <name>recordId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>
